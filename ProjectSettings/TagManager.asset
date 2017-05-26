@@ -40,7 +40,7 @@ TagManager:
   m_SortingLayers:
   - name: Background
     uniqueID: 4099425645
-    locked: 0
+    locked: 1
   - name: Mountains
     uniqueID: 3590546235
     locked: 0
