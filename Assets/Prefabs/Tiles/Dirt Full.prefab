@@ -19,7 +19,8 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4472023289615022}
-  m_Layer: 0
+  - component: {fileID: 61520570099656694}
+  m_Layer: 8
   m_Name: Dirt Full
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -35,7 +36,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4697767504067084}
   - component: {fileID: 212993191872336360}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Dirt Full
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -49,7 +50,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1064763785214488}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -0, y: 3.84, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4697767504067084}
@@ -69,6 +70,31 @@ Transform:
   m_Father: {fileID: 4472023289615022}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!61 &61520570099656694
+BoxCollider2D:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1064763785214488}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 1.9150027, y: 1.9340484}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 3.9093316, y: 3.8344116}
+  m_EdgeRadius: 0
 --- !u!212 &212993191872336360
 SpriteRenderer:
   m_ObjectHideFlags: 1
@@ -99,7 +125,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -1664845197
-  m_SortingLayer: -1
+  m_SortingLayer: -2
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300032, guid: 8f2dddfc6bf93a140b477f34d7d8cb09, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
