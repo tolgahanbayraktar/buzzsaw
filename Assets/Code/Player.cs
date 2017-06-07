@@ -5,6 +5,8 @@ using UnityEngine;
 public class Player : MonoBehaviour {
 
 	public float MaxSpeed = 8;
+	public float SpeedAccelerationOnGround=10f;
+	public float SpeedAccelerationInAir = 5f;
 
 	CharacterController2D _controller;
 	float _normalizedHorizontalSpeed;
@@ -19,7 +21,9 @@ public class Player : MonoBehaviour {
 	void Update()
 	{
 		HandleInput ();
-		_controller.SetHorizontalForce (Mathf.Lerp(_controller.Velocity.x,_normalizedHorizontalSpeed*MaxSpeed, Time.deltaTime));
+		var movementFactor = _controller.State.IsGrounded ? SpeedAccelerationOnGround : SpeedAccelerationInAir;
+
+		_controller.SetHorizontalForce (Mathf.Lerp(_controller.Velocity.x,_normalizedHorizontalSpeed*MaxSpeed, Time.deltaTime*movementFactor));
 	}
 
 	void HandleInput()
@@ -34,6 +38,10 @@ public class Player : MonoBehaviour {
 				Flip ();
 		} else {
 			_normalizedHorizontalSpeed = 0;
+		}
+
+		if (_controller.CanJump && Input.GetKeyDown (KeyCode.Space) ) {
+			_controller.Jump ();
 		}
 			
 	}

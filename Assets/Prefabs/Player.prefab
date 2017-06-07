@@ -195,7 +195,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1924258088590332}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3.29, y: 8.44, z: 0}
+  m_LocalPosition: {x: 6.37, y: 9.05, z: 0}
   m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_Children:
   - {fileID: 4797384081894862}
@@ -321,7 +321,7 @@ Rigidbody2D:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1924258088590332}
-  m_BodyType: 0
+  m_BodyType: 1
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
@@ -346,7 +346,7 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0.006107807, y: -0.21912432}
+  m_Offset: {x: 0, y: 0}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -357,7 +357,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 4.9806585, y: 5.4708147}
+  m_Size: {x: 5, y: 6}
   m_EdgeRadius: 0
 --- !u!114 &114013907854076844
 MonoBehaviour:
@@ -370,6 +370,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c55b6582059d3d4986a8708b9fb2109, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  MaxSpeed: 8
+  SpeedAccelerationOnGround: 10
+  SpeedAccelerationInAir: 5
 --- !u!114 &114526741044902864
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -381,6 +384,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eae3ace08e339de49887bd384a33cfc3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  PlatformMask:
+    serializedVersion: 2
+    m_Bits: 256
+  DefaultParameters:
+    JumpRestrictions: 0
+    MaxVelocity: {x: 3.4028235e+38, y: 3.4028235e+38}
+    SlopeLimit: 30
+    Gravity: -25
+    JumpFrequency: 0.025
+    JumpMagnitude: 16
 --- !u!212 &212021710122415618
 SpriteRenderer:
   m_ObjectHideFlags: 1
