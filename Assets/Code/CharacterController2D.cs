@@ -64,12 +64,24 @@ public class CharacterController2D : MonoBehaviour {
 	}
 
 	private void Move(Vector2 deltaMovement)
-	{
+	{ 
+		State.Reset ();
+
 		CalculateRayOrigins ();
-		MoveHorizontally (ref deltaMovement);
+
+		// Yatay haraketin gereksiz yere bir sürü kez çalışmasını önlemek için
+		if (Mathf.Abs (deltaMovement.x) > 0.001f)
+			MoveHorizontally (ref deltaMovement);	
+		
 		MoveVertically (ref deltaMovement);
 
 		_transform.Translate (deltaMovement, Space.World);
+
+		if (Time.deltaTime > 0)
+			_velocity = deltaMovement / Time.deltaTime;
+
+		if (State.IsMovingUpSlope)
+			_velocity.y = 0;
 	}
 
 	void MoveHorizontally(ref Vector2 deltaMovement)
@@ -80,8 +92,6 @@ public class CharacterController2D : MonoBehaviour {
 		var rayDirection = isGoingRight ? Vector2.right : -Vector2.right;
 		var rayOrigin = isGoingRight ? _raycastBottomRight : _raycastBottomLeft;
 
-
-
 		for(var i=0; i < TotalHorizontalRays; i++)
 		{
 			var rayVector = new Vector2 (rayOrigin.x, rayOrigin.y + (i * _verticalDistanceBetweenRays));
@@ -89,6 +99,11 @@ public class CharacterController2D : MonoBehaviour {
 
 			if (!raycastHit)
 				continue;
+
+			Debug.DrawRay (rayVector, rayDirection, Color.yellow);
+
+			if (i == 0 && HandleHorizontalSlope (ref deltaMovement, Vector2.Angle (raycastHit.normal, Vector2.up), isGoingRight))
+				break;
 
 			deltaMovement.x = raycastHit.point.x - rayVector.x;
 			if (isGoingRight) {
@@ -99,7 +114,7 @@ public class CharacterController2D : MonoBehaviour {
 				State.IsCollidingLeft = true;
 			}
 			
-			Debug.DrawRay (rayVector, rayDirection, Color.yellow);	
+
 		}
 
 	}
@@ -129,7 +144,10 @@ public class CharacterController2D : MonoBehaviour {
 				deltaMovement.y += SkinWidht;
 				State.IsCollidingBelow = true;
 			}
-			
+
+			if (!isGoingUp && deltaMovement.y > 0.0001f)
+				State.IsMovingUpSlope = true;
+
 			Debug.DrawRay (rayVector, rayDirection, Color.yellow);
 		}
 	}
@@ -160,5 +178,23 @@ public class CharacterController2D : MonoBehaviour {
 		_velocity += force;
 	}
 
+	bool HandleHorizontalSlope(ref  Vector2 deltaMovement, float angle, bool isGoingRight)
+	{
+		if(Mathf.RoundToInt(angle) == 90)
+			return  false;
 
+		if (angle > Parameters.SlopeLimit) {
+			deltaMovement.x = 0;
+			return true;
+		}
+
+		if (_jumpIn > 0)
+			return true;
+		
+		deltaMovement.y = Mathf.Abs(Mathf.Tan(angle*Mathf.Deg2Rad)) * deltaMovement.x;
+		State.IsMovingUpSlope = false;
+		State.IsCollidingBelow = true;
+				
+		return true;
+	}
 }
