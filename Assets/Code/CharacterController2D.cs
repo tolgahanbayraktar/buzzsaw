@@ -7,6 +7,7 @@ public class CharacterController2D : MonoBehaviour {
 	const float SkinWidht=0.02f;
 	const int TotalHorizontalRays = 8;
 	const int TotalVerticalRays = 4;
+	static readonly float SlopeLimitTangant = Mathf.Tan (75f * Mathf.Deg2Rad);
 
 	public LayerMask PlatformMask;
 	public Vector2 Velocity{ get { return _velocity; }}
@@ -28,6 +29,7 @@ public class CharacterController2D : MonoBehaviour {
 			return false;
 		}
 	}
+	public GameObject StandingOn { get; private set;}
 
 	BoxCollider2D _boxCollider;
 	Vector2 _velocity;
@@ -37,6 +39,8 @@ public class CharacterController2D : MonoBehaviour {
 	Vector3 _raycastTopLeft;
 	Transform _transform;
 	ControllerParameters2D _OverrideParameters=null;
+	Vector3 _activeGlobalPlatformPoint;
+	Vector3 _activeLocalPlatformPoint;
 
 	float _jumpIn;
 	float _verticalDistanceBetweenRays;
@@ -65,9 +69,15 @@ public class CharacterController2D : MonoBehaviour {
 
 	private void Move(Vector2 deltaMovement)
 	{ 
-		State.Reset ();
+		// Reset yapmadan önce ayakları yere değiyorsa.
+		var wasGrounded = State.IsCollidingBelow;
 
+		State.Reset ();
+		HandlePlatforms ();
 		CalculateRayOrigins ();
+
+		if (deltaMovement.y < 0 && wasGrounded)
+			HandleVerticalSlope (ref deltaMovement);
 
 		// Yatay haraketin gereksiz yere bir sürü kez çalışmasını önlemek için
 		if (Mathf.Abs (deltaMovement.x) > 0.001f)
@@ -82,6 +92,11 @@ public class CharacterController2D : MonoBehaviour {
 
 		if (State.IsMovingUpSlope)
 			_velocity.y = 0;
+
+		if (StandingOn != null) {
+			_activeGlobalPlatformPoint = transform.position;
+			_activeLocalPlatformPoint = StandingOn.transform.InverseTransformPoint (transform.position);
+		}
 	}
 
 	void MoveHorizontally(ref Vector2 deltaMovement)
@@ -135,7 +150,12 @@ public class CharacterController2D : MonoBehaviour {
 
 			if (!raycastHit)
 				continue;
-		
+
+			if (!StandingOn) {
+				StandingOn = raycastHit.collider.gameObject;
+				Debug.Log (StandingOn.name);
+			}
+
 			deltaMovement.y = raycastHit.point.y - rayVector.y;
 			if (isGoingUp) {
 				deltaMovement.y -= SkinWidht;
@@ -196,5 +216,51 @@ public class CharacterController2D : MonoBehaviour {
 		State.IsCollidingBelow = true;
 				
 		return true;
+	}
+
+	void HandleVerticalSlope(ref Vector2 deltaMovement)
+	{
+		var center = (_raycastBottomLeft.x + _raycastBottomRight.x) / 2;
+		//Debug.Log (center);
+		var direction = -Vector2.up;
+		var slopeDistance = SlopeLimitTangant * (_raycastBottomRight.x - center);
+		var slopeRayVector = new Vector2 (center,_raycastBottomRight.y);
+
+		var raycastHit = Physics2D.Raycast (slopeRayVector, direction, slopeDistance, PlatformMask);
+
+		if (!raycastHit)
+			return;
+
+		// işaretleri kontrol eder
+		var isMovingDownSlope = Mathf.Sign (raycastHit.normal.x) == Mathf.Sign (deltaMovement.x);
+		if (!isMovingDownSlope)
+			return;
+
+		var angle = Vector2.Angle (raycastHit.normal, Vector2.up);
+
+		// Yokuş açısı çok çok küçükse burdan çık
+		if (Mathf.Abs (angle) < .0001f)
+			return;
+
+		State.IsMovingDownSlope = true;
+		State.SlopeAngle = angle;
+
+		// Playerdan gönderdiğimiz noktanın çarpma noktasından ışını gönderdiğimiz noktayı çkartıyoruz
+		// deltamovement.y de ne kadar aşağı ineceğimizi hesaplıyoruz.
+		deltaMovement.y = raycastHit.point.y - slopeRayVector.y;
+		Debug.DrawRay (slopeRayVector, direction * slopeDistance, Color.yellow);
+	}
+
+	void HandlePlatforms()
+	{
+		// Altımızda bir platform varmı ?
+		if (StandingOn != null) {
+			var newGlobalPlatformPoint = StandingOn.transform.TransformPoint (_activeLocalPlatformPoint);
+			var moveDistance = newGlobalPlatformPoint - _activeGlobalPlatformPoint;
+			if (moveDistance != Vector3.zero)
+				transform.Translate (moveDistance, Space.World);
+
+			StandingOn = null;
+		}
 	}
 }
