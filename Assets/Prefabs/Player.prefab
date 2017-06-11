@@ -370,7 +370,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c55b6582059d3d4986a8708b9fb2109, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxSpeed: 8
+  MaxSpeed: 16
   SpeedAccelerationOnGround: 10
   SpeedAccelerationInAir: 5
 --- !u!114 &114526741044902864
@@ -388,9 +388,9 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 256
   DefaultParameters:
-    JumpRestrictions: 0
+    JumpRestrictions: 1
     MaxVelocity: {x: 3.4028235e+38, y: 3.4028235e+38}
-    SlopeLimit: 30
+    SlopeLimit: 45
     Gravity: -25
     JumpFrequency: 0.025
     JumpMagnitude: 16

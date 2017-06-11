@@ -41,6 +41,7 @@ public class CharacterController2D : MonoBehaviour {
 	ControllerParameters2D _OverrideParameters=null;
 	Vector3 _activeGlobalPlatformPoint;
 	Vector3 _activeLocalPlatformPoint;
+	GameObject _lastStandingOn;
 
 	float _jumpIn;
 	float _verticalDistanceBetweenRays;
@@ -84,6 +85,8 @@ public class CharacterController2D : MonoBehaviour {
 			MoveHorizontally (ref deltaMovement);	
 		
 		MoveVertically (ref deltaMovement);
+		CorrectHorizontalPlacement (ref deltaMovement, true);
+		CorrectHorizontalPlacement (ref deltaMovement, false);
 
 		_transform.Translate (deltaMovement, Space.World);
 
@@ -96,6 +99,11 @@ public class CharacterController2D : MonoBehaviour {
 		if (StandingOn != null) {
 			_activeGlobalPlatformPoint = transform.position;
 			_activeLocalPlatformPoint = StandingOn.transform.InverseTransformPoint (transform.position);
+
+			if (_lastStandingOn != StandingOn) {
+				StandingOn.SendMessage ("ControllerEnter2D", this, SendMessageOptions.DontRequireReceiver);
+				_lastStandingOn = StandingOn;
+			}
 		}
 	}
 
@@ -153,7 +161,7 @@ public class CharacterController2D : MonoBehaviour {
 
 			if (!StandingOn) {
 				StandingOn = raycastHit.collider.gameObject;
-				Debug.Log (StandingOn.name);
+				//Debug.Log (StandingOn.name);
 			}
 
 			deltaMovement.y = raycastHit.point.y - rayVector.y;
@@ -196,6 +204,10 @@ public class CharacterController2D : MonoBehaviour {
 	public void AddForce(Vector2 force)
 	{
 		_velocity += force;
+	}
+
+	public void SetVerticalForce(float y){
+		_velocity.y = y;
 	}
 
 	bool HandleHorizontalSlope(ref  Vector2 deltaMovement, float angle, bool isGoingRight)
@@ -262,5 +274,48 @@ public class CharacterController2D : MonoBehaviour {
 
 			StandingOn = null;
 		}
+	}
+
+	void CorrectHorizontalPlacement(ref Vector2 deltaMovement, bool isRight)
+	{
+		var halfWidth = (_boxCollider.size.x * _localScale.x) / 2;
+		var rayOrigin = isRight ? _raycastBottomRight : _raycastBottomLeft;
+		if (isRight)
+			rayOrigin.x += SkinWidht - halfWidth;
+		else
+			rayOrigin.x += -SkinWidht + halfWidth;
+
+		var rayDirection = isRight ? Vector2.right : -Vector2.right;
+		var offset = 0f;
+
+		for (var i = 0; i < TotalHorizontalRays - 1; i++) {
+			var rayVector = new Vector2 (rayOrigin.x + deltaMovement.x, deltaMovement.y + rayOrigin.y + i * _verticalDistanceBetweenRays);
+
+			var raycastHit = Physics2D.Raycast (rayVector, rayDirection, halfWidth, PlatformMask);
+			if (!raycastHit)
+				continue;
+
+			offset = isRight ? ((raycastHit.point.x - _transform.position.x) - halfWidth) : (halfWidth - (_transform.position.x - raycastHit.point.x));
+		}
+
+		deltaMovement.x += offset;
+	}
+
+	void OnTriggerEnter2D(Collider2D other)
+	{
+		var parameters = other.gameObject.GetComponent<ControllerPhysicsVolume2D> ();
+		if (parameters == null)
+			return;
+
+		_OverrideParameters = parameters.Parameters;
+	}
+
+	void OnTriggerExit2D(Collider2D other)
+	{
+		var parameters = other.gameObject.GetComponent<ControllerPhysicsVolume2D> ();
+		if (parameters == null)
+			return;
+
+		_OverrideParameters = null;
 	}
 }
