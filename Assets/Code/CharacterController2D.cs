@@ -30,6 +30,7 @@ public class CharacterController2D : MonoBehaviour {
 		}
 	}
 	public GameObject StandingOn { get; private set;}
+	public bool HandleCollisions{ get; set;}
 
 	BoxCollider2D _boxCollider;
 	Vector2 _velocity;
@@ -49,6 +50,7 @@ public class CharacterController2D : MonoBehaviour {
 
 	void Awake()
 	{
+		HandleCollisions = true;
 		State = new ControllerState2D ();
 		_boxCollider = GetComponent<BoxCollider2D> ();
 		_localScale = transform.localScale;
@@ -77,19 +79,22 @@ public class CharacterController2D : MonoBehaviour {
 		HandlePlatforms ();
 		CalculateRayOrigins ();
 
-		if (deltaMovement.y < 0 && wasGrounded)
-			HandleVerticalSlope (ref deltaMovement);
 
-		// Yatay haraketin gereksiz yere bir sürü kez çalışmasını önlemek için
-		if (Mathf.Abs (deltaMovement.x) > 0.001f)
-			MoveHorizontally (ref deltaMovement);	
+		if (HandleCollisions) {
+			if (deltaMovement.y < 0 && wasGrounded)
+				HandleVerticalSlope (ref deltaMovement);
+
+			// Yatay haraketin gereksiz yere bir sürü kez çalışmasını önlemek için
+			if (Mathf.Abs (deltaMovement.x) > 0.001f)
+				MoveHorizontally (ref deltaMovement);	
 		
-		MoveVertically (ref deltaMovement);
-		CorrectHorizontalPlacement (ref deltaMovement, true);
-		CorrectHorizontalPlacement (ref deltaMovement, false);
+			MoveVertically (ref deltaMovement);
+			CorrectHorizontalPlacement (ref deltaMovement, true);
+			CorrectHorizontalPlacement (ref deltaMovement, false);
+		}
 
 		_transform.Translate (deltaMovement, Space.World);
-
+		
 		if (Time.deltaTime > 0)
 			_velocity = deltaMovement / Time.deltaTime;
 
@@ -204,6 +209,10 @@ public class CharacterController2D : MonoBehaviour {
 	public void AddForce(Vector2 force)
 	{
 		_velocity += force;
+	}
+	public void SetForce(Vector2 force)
+	{
+		_velocity = force;
 	}
 
 	public void SetVerticalForce(float y){
