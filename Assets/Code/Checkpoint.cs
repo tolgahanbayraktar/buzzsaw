@@ -16,7 +16,7 @@ public class Checkpoint : MonoBehaviour {
 		player.RespawnAt (transform);
 
 		foreach (var listener in _listeners) {
-			listener.OnPlayerRespawnInThisCheckpoint ();
+			listener.OnPlayerRespawnInThisCheckpoint (); 
 		}
 	}
 
