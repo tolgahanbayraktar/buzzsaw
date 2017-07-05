@@ -24,4 +24,22 @@ public class Checkpoint : MonoBehaviour {
 	{
 		_listeners.Add (listener);
 	}
+
+	/**
+	 * Levelmanager tarafından çağırılıyor
+	 * 
+	*/
+	public void PlayerHitCheckpoint()
+	{
+		
+		StartCoroutine (PlayerHitCheckpointCo(LevelManager.Instance.CurrentTimeBonus));
+	}
+
+	public IEnumerator PlayerHitCheckpointCo(int bonus)
+	{
+		FloatingText.Show ("Checkpoint!", "CheckpointText", new CenteredTextPositioner(.5f));
+		yield return new WaitForSeconds (.5f);
+
+		FloatingText.Show (string.Format ("+{0} Time bonus", bonus), "CheckPointText", new CenteredTextPositioner (.5f));
+	}
 }

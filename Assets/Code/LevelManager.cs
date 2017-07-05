@@ -71,13 +71,15 @@ public class LevelManager : MonoBehaviour {
 		// Birsonraki checkpointin mesafesini ölçüyor.
 		var distanceToNextCheckpoint = _checkpoints [_currentCheckPointIndex + 1].transform.position.x - Player.transform.position.x;
 
-		Debug.Log (distanceToNextCheckpoint);
+		//Debug.Log (distanceToNextCheckpoint);
 
-		// Bir sonraki checkpointe gelmiş ise current indexi 1 arttır
+
 		if (distanceToNextCheckpoint >= 0)
 			return;
-
+		
+		// Bir sonraki checkpointe gelmiş ise current indexi 1 arttır
 		_currentCheckPointIndex++;
+		_checkpoints [_currentCheckPointIndex].PlayerHitCheckpoint ();
 
 		GameManager.Instance.AddPoints (CurrentTimeBonus);
 		_savePoints = GameManager.Instance.points;

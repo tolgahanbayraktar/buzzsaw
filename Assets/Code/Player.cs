@@ -11,6 +11,9 @@ public class Player : MonoBehaviour {
 	public GameObject OuchEffect;
 	public int MaxHealth=100;
 	public int Healt{ get; private set;}
+	public Projectile Projectile;
+	public Transform ProjectileFireLocation;
+	public GameObject FireProjectileEffect;
 
 	CharacterController2D _controller;
 	float _normalizedHorizontalSpeed;
@@ -57,6 +60,11 @@ public class Player : MonoBehaviour {
 		if (_controller.CanJump && Input.GetKeyDown (KeyCode.Space) ) {
 			_controller.Jump ();
 		}
+
+		if (Input.GetMouseButtonDown (0)) {
+			FireProjectile ();
+		}
+
 			
 	}
 
@@ -84,6 +92,7 @@ public class Player : MonoBehaviour {
 		_controller.SetForce (new Vector2 (0, 10));
 		IsDead = true;
 		GetComponent<Collider2D> ().enabled = false;
+		Healt = 0;
 	}
 
 	public void TakeDamage(int damage)
@@ -94,5 +103,19 @@ public class Player : MonoBehaviour {
 
 		if (Healt <= 0)
 			LevelManager.Instance.KillPlayer ();
+
+		FloatingText.Show (string.Format ("-{0}", damage), "PlayerTakeDamageText",
+			new FromWorldPointTextPositioner (Camera.main, transform.position, 2f, 60f));
+	}
+
+	private void FireProjectile ()
+	{
+		if (FireProjectileEffect != null) {
+			var effect = (GameObject)Instantiate (FireProjectileEffect, ProjectileFireLocation.position, ProjectileFireLocation.rotation);
+			effect.transform.parent = transform;
+		}
+		var projectile= (Projectile)Instantiate (Projectile, ProjectileFireLocation.position, ProjectileFireLocation.rotation);
+		var direction = _isFacingRight ? Vector2.right : -Vector2.right;
+		projectile.Initialize (gameObject, direction, _controller.Velocity);
 	}
 }
