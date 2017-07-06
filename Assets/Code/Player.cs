@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Player : MonoBehaviour {
+public class Player : MonoBehaviour, ITakeDamage {
 
 	public float MaxSpeed = 8;
 	public float SpeedAccelerationOnGround=10f;
@@ -14,10 +14,13 @@ public class Player : MonoBehaviour {
 	public Projectile Projectile;
 	public Transform ProjectileFireLocation;
 	public GameObject FireProjectileEffect;
+	public float FireRate=0.5f;
+
 
 	CharacterController2D _controller;
 	float _normalizedHorizontalSpeed;
 	bool _isFacingRight;
+	float _canFireIn;
 
 	public void Awake()
 	{
@@ -32,6 +35,8 @@ public class Player : MonoBehaviour {
 
 	void Update()
 	{
+		_canFireIn -= Time.deltaTime;
+
 		if (!IsDead)
 			HandleInput ();
 		
@@ -95,7 +100,7 @@ public class Player : MonoBehaviour {
 		Healt = 0;
 	}
 
-	public void TakeDamage(int damage)
+	public void TakeDamage(int damage, GameObject instigator)
 	{
 		// Playera bir obje çarpar ve hasar verirse
 		Instantiate (OuchEffect, transform.position, transform.rotation);
@@ -110,6 +115,10 @@ public class Player : MonoBehaviour {
 
 	private void FireProjectile ()
 	{
+		// Sürekli ateş etmemesi için
+		if (_canFireIn > 0)
+			return;
+
 		if (FireProjectileEffect != null) {
 			var effect = (GameObject)Instantiate (FireProjectileEffect, ProjectileFireLocation.position, ProjectileFireLocation.rotation);
 			effect.transform.parent = transform;
@@ -117,5 +126,8 @@ public class Player : MonoBehaviour {
 		var projectile= (Projectile)Instantiate (Projectile, ProjectileFireLocation.position, ProjectileFireLocation.rotation);
 		var direction = _isFacingRight ? Vector2.right : -Vector2.right;
 		projectile.Initialize (gameObject, direction, _controller.Velocity);
+
+		_canFireIn = FireRate;
 	}
+		
 }

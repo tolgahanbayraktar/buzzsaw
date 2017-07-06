@@ -18,7 +18,7 @@ public class GiveDamageToPlayer : MonoBehaviour {
 		if (player == null)
 			return;
 
-		player.TakeDamage (DamageToGive);
+		player.TakeDamage (DamageToGive, gameObject);
 
 		/**
 		 * Hasar veren objenin playerin içine girmesini engelledik ufak bir force uyguluyoruz

@@ -17,6 +17,7 @@ public abstract class Projectile : MonoBehaviour {
 
 	public virtual void OnTriggerEnter2D(Collider2D other)
 	{
+		// Gönderilen microfon ojesi sadece fizik ile etkileşimli şeylere çarpınca tetiklensin
 		if ((CollisionMask.value & (1 << other.gameObject.layer)) == 0) {
 			OnNotCollideWith (other);
 			return;
