@@ -7,10 +7,16 @@ public class SimpleProjectile : Projectile, ITakeDamage {
 	public float TimeToLive = 10f;
 	public GameObject DestroyedEffect;
 	public int Damage=10;
+	public int PointsToGivePlayer=5;
 
 	public void TakeDamage(int damage, GameObject instigator)
 	{
-		
+		var projectile = instigator.GetComponent<Projectile> ();
+
+		if (projectile != null && projectile.Owner.GetComponent<Player> () != null && PointsToGivePlayer != 0) {
+			GameManager.Instance.AddPoints (PointsToGivePlayer);
+			FloatingText.Show(string.Format("+{0}!", PointsToGivePlayer), "PointStarText",new FromWorldPointTextPositioner(Camera.main, transform.position,1.5f,50));
+		}
 	}
 
 	public void Update()
