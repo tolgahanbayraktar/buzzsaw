@@ -47,6 +47,9 @@ TagManager:
   - name: Treeline
     uniqueID: 1454724281
     locked: 0
+  - name: BehindForeground
+    uniqueID: 563960731
+    locked: 0
   - name: Foreground
     uniqueID: 2630122099
     locked: 0
